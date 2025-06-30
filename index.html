@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Spelling Quiz - Welcome</title>
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <h1>Welcome to the Spelling Bee Platform</h1>
+  <form id="participant-form" action="quiz.html" method="get">
+    <label for="name">Your Name:</label>
+    <input type="text" id="name" name="name" class="capitalize-input" placeholder="Enter your fullname"  autocomplete="off" autocorrect="off" spellcheck="false" required />
+
+    <label for="code">Quiz Code:</label>
+    <input type="text" id="code" name="code" placeholder="Enter the Alphanumeric code" required />
+
+    <button type="submit">Start Quiz</button>
+  </form>
+
+  <div class="login-signup-btn">
+    <a href="admin-login.html" class="login-page-link">Do you want to Login or Signup? Click Here</a>
+  </div>
+
+  <div class="footer">
+    <p>&copy; 2025 Spelling Quiz App</p>
+  </div>
+  <script type="module" src="script.js"></script>
+</body>
+
+</html>

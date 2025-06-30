@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Login / Signup</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body style="padding: 15px 10px !important;">
+
+  <a href="index.html" class="test-page-btn">Take a Test</a>
+
+  <!-- Login Form -->
+  <div class="form-container" id="login-container">
+    <h1>Admin Login</h1>
+    <form id="login-form">
+      <label for="email-login">Email:</label>
+      <input type="email" id="email-login" name="email" required />
+
+      <label for="password-login">Password:</label>
+      <input type="password" id="password-login" name="password" required />
+
+      <label>
+        <input type="checkbox" id="toggle-login-password"> Show Password
+      </label>
+      <p><a href="#" id="forgot-password-link">Forgot Password?</a></p>
+      <button type="submit">Login</button>
+      <p id="login-error" class="error-message"></p>
+    </form>
+    <div class="toggle-link" onclick="toggleForms()">Don’t have an account? Sign up</div>
+  </div>
+
+  <!-- Signup Form -->
+  <div class="form-container hidden" id="signup-container">
+    <h1>Admin Signup</h1>
+    <form id="signup-form">
+      <label for="email-signup">Email:</label>
+      <input type="email" id="email-signup" name="email" required />
+
+      <label for="password-signup">Password:</label>
+      <input type="password" id="password-signup" name="password" required />
+
+      <label for="confirm-password-signup">Confirm Password:</label>
+      <input type="password" id="confirm-password-signup" name="confirm-password" required />
+
+      <label>
+        <input type="checkbox" id="toggle-signup-password"> Show Password
+      </label>
+
+
+      <button type="submit">Sign Up</button>
+      <p id="signup-error" class="error-message"></p>
+    </form>
+    <div class="toggle-link" onclick="toggleForms()">Already have an account? Login</div>
+  </div>
+
+  <div class="footer">
+    <p>&copy; 2025 Spelling Quiz App</p>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      function toggleForms() {
+        const loginContainer = document.getElementById('login-container');
+        const signupContainer = document.getElementById('signup-container');
+        const loginForm = document.getElementById('login-form');
+        const signupForm = document.getElementById('signup-form');
+
+        // Toggle visibility
+        loginContainer.classList.toggle('hidden');
+        signupContainer.classList.toggle('hidden');
+
+        // Reset both forms
+        if (loginForm) loginForm.reset();
+        if (signupForm) signupForm.reset();
+      }
+
+      // Assign toggle function to window so it's accessible from inline HTML
+      window.toggleForms = toggleForms;
+
+      // Reset forms initially
+      const loginForm = document.getElementById('login-form');
+      const signupForm = document.getElementById('signup-form');
+      if (loginForm) loginForm.reset();
+      if (signupForm) signupForm.reset();
+
+      // Show/hide password toggles
+      const toggleSignup = document.getElementById("toggle-signup-password");
+      const signupPwd = document.getElementById("password-signup");
+      const confirmPwd = document.getElementById("confirm-password-signup");
+
+      if (toggleSignup && signupPwd && confirmPwd) {
+        toggleSignup.addEventListener("change", () => {
+          const type = toggleSignup.checked ? "text" : "password";
+          signupPwd.type = type;
+          confirmPwd.type = type;
+        });
+      }
+
+      const toggleLogin = document.getElementById("toggle-login-password");
+      const loginPwd = document.getElementById("password-login");
+      if (toggleLogin && loginPwd) {
+        toggleLogin.addEventListener("change", () => {
+          loginPwd.type = toggleLogin.checked ? "text" : "password";
+        });
+      }
+    });
+  </script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+  </script>
+  <script type="text/javascript">
+    (function () {
+      emailjs.init({
+        publicKey: "OtpYqXmnWR4doVhXW",
+      });
+    })();
+  </script>
+
+  <script type="module" src="script.js"></script>
+</body>
+
+</html>

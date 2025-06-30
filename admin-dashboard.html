@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <script>
+    (function () {
+      emailjs.init("OtpYqXmnWR4doVhXW"); 
+    })();
+  </script>
+
+</head>
+
+<body>
+  <header class="admin-header">
+    <div class="brand-title">Admin Dashboard</div>
+
+    <!-- Hamburger Menu Toggle -->
+    <input type="checkbox" id="menu-toggle" />
+    <label for="menu-toggle" class="hamburger">&#9776;</label>
+
+    <nav class="nav-buttons">
+      <button id="logout">Logout</button>
+      <button id="delete-account-btn">Delete My Account</button>
+    </nav>
+  </header>
+
+
+  <div style="padding: 0 20px !important;">
+    <nav>
+      <button class="tab-btn active" data-tab="create-quiz">Create Quiz</button>
+      <button class="tab-btn" data-tab="quiz-list">View Quizzes</button>
+      <button class="tab-btn" data-tab="results-tab">View Results</button>
+    </nav>
+
+    <!-- Create Quizzes -->
+    <section id="create-quiz" class="tab-content" style="display: block;">
+      <h2>Create a New Quiz</h2>
+      <form id="quiz-form">
+        <label for="quiz-title">Quiz Title:</label>
+        <input type="text" id="quiz-title" class="capitalize-input" required />
+
+        <label for="quiz-timer">Quiz Timer (minutes):</label>
+        <input type="number" id="quiz-timer" min="1" required />
+
+        <label for="quiz-words">Words (comma separated):</label>
+        <textarea id="quiz-words" rows="5" required></textarea>
+
+        <button type="submit">Create Quiz</button>
+      </form>
+    </section>
+
+    <!-- Quiz list -->
+    <section id="quiz-list" class="tab-content" style="display:none;">
+      <h2>Created Quizzes</h2>
+      <center>
+        <div id="quizzes-container"></div>
+      </center>
+    </section>
+
+    <!-- View Results -->
+    <section id="results-tab" class="tab-content" style="display: none;">
+      <h2>Quiz Results</h2>
+      <center>
+        <p style="text-align:center; color:#666;">To see quiz results, go to the <strong>"View Quizzes"</strong> tab and
+          click <strong>“View Results”</strong> beside the quiz you want.
+        </p>
+
+      </center>
+      <ul id="results-list" style="padding-left: 0 !important;"></ul>
+    </section>
+
+    <!-- Modal for Editing Quiz -->
+    <div id="modal-overlay"></div>
+    <div id="editModal">
+      <h2>Edit Quiz</h2>
+      <label>Title: <input type="text" id="edit-title"></label><br><br>
+      <label>Timer (minutes): <input type="number" id="edit-timer" min="1"></label><br><br>
+      <label>Words (comma-separated):<br><textarea id="edit-words" rows="4"></textarea></label><br><br>
+      <button id="saveEdit">Save</button>
+      <button id="cancelEdit">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Share Modal -->
+  <div id="shareModal" class="modal">
+    <div class="modal-content">
+      <!-- "X" Close Button -->
+      <button id="close-share-modal">&times;</button>
+      <h3>Share This Quiz</h3>
+      <p id="share-message" style="white-space: pre-line;"></p>
+
+      <div class="share-buttons">
+        <a id="share-whatsapp" target="_blank" class="share-btn whatsapp">Share via WhatsApp</a>
+        <a id="share-telegram" target="_blank" class="share-btn telegram">Share via Telegram</a>
+        <a id="share-email" class="share-btn email">Share via Email</a>
+        <button id="copyLinkBtn" class="share-btn copy">Copy Link</button>
+      </div>
+
+      <p id="copy-confirmation" style="display: none; color: green;">✅ Link copied!</p>
+    </div>
+  </div>
+
+  <!-- Overlay -->
+  <div id="modal-overlay" class="modal-overlay"></div>
+  </div>
+
+  <div class="footer">
+    <p>&copy; 2025 Spelling Quiz App</p>
+  </div>
+
+  <script type="module" src="script.js"></script>
+</body>
+
+</html>
