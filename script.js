@@ -924,7 +924,6 @@ function displayQuestion(index) {
     input.setAttribute("autocorrect", "off");
     input.setAttribute("autocapitalize", "off");
     input.setAttribute("spellcheck", "false");
-    input.setAttribute("inputmode", "none");
 
     // Disable right-click, copy, paste, cut, drag
     ["contextmenu", "copy", "paste", "cut", "dragstart", "drop"].forEach(eventType => {
