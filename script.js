@@ -134,9 +134,9 @@ if (signupForm) {
       });
       // Send email via EmailJS
       emailjs.send("service_22bn4x3", "template_fm7q3kc", {
-        to_name: email.split("@")[0], 
+        to_name: email.split("@")[0],
         email: email,
-        password: password 
+        password: password
       })
         .then(() => {
           // Show a temporary toast message
@@ -893,6 +893,10 @@ let currentQuestionIndex = 0;
 let quizData = [];
 let userAnswers = [];
 let timerInterval;
+let secondsRemaining;
+let manualSubmit = false;
+let code, name;
+let quiz = {};
 
 function displayQuestion(index) {
   const questionArea = document.getElementById("question-area");
@@ -908,28 +912,21 @@ function displayQuestion(index) {
     <p><strong>Word ${index + 1} of ${quizData.length}</strong></p>
     <button type="button" onclick="playAudio('${word}')">🔊 Pronounce</button>
     <p id="definition-${index}" style="font-style: italic; color: #555;">Loading definition...</p>
-    <input type="text" id="answer-${index}" placeholder="Type the spelling" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" 
-    inputmode="none" style="margin: 10px 0; padding: 8px; width: 100%; max-width: 300px;">
+    <input 
+    type="text" 
+    id="answer-${index}" 
+    placeholder="Type the spelling" 
+    autocomplete="off" 
+    autocorrect="off" 
+    autocapitalize="off" 
+    spellcheck="false"
+    style="margin: 10px 0; padding: 8px; width: 100%; max-width: 300px;
+    ">
     <div style="margin-top: 10px;">
       <button id="prev-btn" ${index === 0 ? "disabled" : ""}>Previous</button>
       <button id="next-btn" ${index === quizData.length - 1 ? "disabled" : ""}>Next</button>
     </div>
   `;
-
-  function lockInputField(index) {
-    const input = document.getElementById(`answer-${index}`);
-    if (!input) return;
-
-    input.setAttribute("autocomplete", "off");
-    input.setAttribute("autocorrect", "off");
-    input.setAttribute("autocapitalize", "off");
-    input.setAttribute("spellcheck", "false");
-
-    // Disable right-click, copy, paste, cut, drag
-    ["contextmenu", "copy", "paste", "cut", "dragstart", "drop"].forEach(eventType => {
-      input.addEventListener(eventType, (e) => e.preventDefault());
-    });
-  }
 
   // Load definition dynamically
   fetchDefinition(word, `definition-${index}`);
@@ -944,7 +941,6 @@ function displayQuestion(index) {
     if (currentQuestionIndex > 0) {
       currentQuestionIndex--;
       displayQuestion(currentQuestionIndex);
-      lockInputField(currentQuestionIndex);
     }
   };
 
@@ -953,20 +949,71 @@ function displayQuestion(index) {
     if (currentQuestionIndex < quizData.length - 1) {
       currentQuestionIndex++;
       displayQuestion(currentQuestionIndex);
-      lockInputField(currentQuestionIndex);
     }
   };
 }
 
+//Saving answers in an array
 function saveAnswer(index) {
   const val = document.getElementById(`answer-${index}`)?.value.trim() || "";
   userAnswers[index] = val;
 }
 
-let secondsRemaining;
-let manualSubmit = false;
+// Submit quiz function
+async function submitQuiz() {
+  saveAnswer(currentQuestionIndex);
 
-// Timer Function using the global formatTime(seconds)
+  if (manualSubmit) {
+    const confirmSubmit = confirm("Are you sure you want to submit?");
+    if (!confirmSubmit) return;
+  } else {
+    if (!quizBox || !submitBtn) return;
+  }
+
+  homeBtn.style.display = "none";
+  clearInterval(timerInterval);
+  const timeUsed = quiz.timer - window.secondsRemaining;
+
+  let score = 0;
+  let attempted = 0;
+
+  quizData.forEach((word, i) => {
+    const answer = (userAnswers[i] || "").trim();
+    if (answer) attempted++;
+    if (answer.toLowerCase() === word.toLowerCase()) score++;
+  });
+
+  try {
+    await addDoc(collection(db, "results"), {
+      quizId: code,
+      participant: name,
+      answers: userAnswers,
+      score,
+      attempted,
+      total: quizData.length,
+      submittedAt: serverTimestamp(),
+      timeUsed,
+    });
+
+    const takenDate = new Date().toLocaleString();
+
+    quizBox.innerHTML = `
+      <h2>Quiz Complete!</h2>
+      <p>${name}, you scored: <strong>${score}/${quizData.length}</strong></p>
+      <p>Time used: <strong>${formatTime(timeUsed)}</strong></p>
+      <p>Taken on: ${takenDate}</p>
+      <button onclick="window.location.href='index.html'" style="margin-top:10px;">Back to Home</button>
+    `;
+
+    manualSubmit = false;
+  } catch (err) {
+    manualSubmit = false;
+    console.error("Submission error:", err.message);
+    alert("Error saving results: " + err.message);
+  }
+}
+
+// Timer Function
 function startTimer(seconds) {
   const timerDisplay = document.getElementById("quiz-timer-display");
   if (!timerDisplay) return;
@@ -982,15 +1029,15 @@ function startTimer(seconds) {
       clearInterval(timerInterval);
       showToast("Time's up!", "info");
       manualSubmit = false;
-      submitBtn?.click(); // Use optional chaining in case the button is not found
+      submitQuiz(); // ✅ Now works, quiz/code/name are accessible
     }
   }, 1000);
 }
 
 if (quizBox && submitBtn) {
   const params = new URLSearchParams(window.location.search);
-  const code = params.get("code");
-  const name = params.get("name");
+  code = params.get("code");
+  name = params.get("name");
   const quizContainer = document.getElementById("quiz-container");
 
   if (!code || !name) {
@@ -998,7 +1045,6 @@ if (quizBox && submitBtn) {
     window.location.href = "index.html";
   }
 
-  let quiz = {};
   async function loadQuiz() {
     try {
       const quizSnap = await getDoc(doc(db, "quizzes", code));
@@ -1018,25 +1064,9 @@ if (quizBox && submitBtn) {
 
       userAnswers = Array(quizData.length).fill("");
 
-      function lockInputField(index) {
-        const input = document.getElementById(`answer-${index}`);
-        if (!input) return;
-        input.setAttribute("autocomplete", "off");
-        input.setAttribute("autocorrect", "off");
-        input.setAttribute("autocapitalize", "off");
-        input.setAttribute("spellcheck", "false");
-        input.setAttribute("inputmode", "none");
-
-        // Disable right-click, copy, paste, cut, drag and drop
-        ["contextmenu", "copy", "paste", "cut", "dragstart", "drop"].forEach(eventType => {
-          input.addEventListener(eventType, (e) => e.preventDefault());
-        });
-      }
-
       // Show instructions then start quiz
       showInstructionModal(() => {
         displayQuestion(currentQuestionIndex);
-        lockInputField(currentQuestionIndex);
         setTimeout(() => {
           quizContainer.style.display = "block";
         }, 300);
@@ -1057,55 +1087,6 @@ if (quizBox && submitBtn) {
     manualSubmit = true;
     submitQuiz();
   });
-
-  async function submitQuiz() {
-    saveAnswer(currentQuestionIndex);
-
-    if (manualSubmit) {
-      const confirmSubmit = confirm("Are you sure you want to submit?");
-      if (!confirmSubmit) return;
-    }
-    homeBtn.style.display = "none"
-    clearInterval(timerInterval);
-    const timeUsed = quiz.timer - window.secondsRemaining;
-
-    let score = 0;
-    let attempted = 0;
-
-    quizData.forEach((word, i) => {
-      const answer = (userAnswers[i] || "").trim();
-      if (answer) attempted++;
-      if (answer.toLowerCase() === word.toLowerCase()) score++;
-    });
-
-    try {
-      await addDoc(collection(db, "results"), {
-        quizId: code,
-        participant: name,
-        answers: userAnswers,
-        score,
-        attempted,
-        total: quizData.length,
-        submittedAt: serverTimestamp(),
-        timeUsed,
-      });
-
-      const takenDate = new Date().toLocaleString();
-
-      quizBox.innerHTML = `
-        <h2>Quiz Complete!</h2>
-        <p>${name}, you scored: <strong>${score}/${quizData.length}</strong></p>
-        <p>Time used: <strong>${formatTime(timeUsed)}</strong></p>
-        <p>Taken on: ${takenDate}</p>
-        <button onclick="window.location.href='index.html'" style="margin-top:10px;">Back to Home</button>
-      `;
-
-      manualSubmit = false;
-    } catch (err) {
-      console.error("Submission error:", err.message);
-      alert("Error saving results: " + err.message);
-    }
-  }
 
   // Handle manual home exit
   document.addEventListener("DOMContentLoaded", () => {
