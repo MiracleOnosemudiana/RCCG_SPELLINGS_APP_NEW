@@ -212,6 +212,7 @@ label {
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
@@ -227,7 +228,7 @@ label {
   border-radius: 6px;
   padding: 16px;
   position: fixed;
-  z-index: 999;
+  z-index: 1500;
   left: 50%;
   top: 30px;
   transform: translateX(-50%);
@@ -299,8 +300,13 @@ nav {
   align-items: center;
   justify-content: space-around;
   padding: 0rem 2rem;
-  position: relative;
+  position: sticky;
+  /* 🔥 Sticky behavior */
+  top: 0;
+  /* 🔥 Stick to top */
   z-index: 1000;
+  background-color: white;
+  /* Ensure it's not transparent */
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   border-bottom: 2px solid rgba(255, 255, 255, 0.1);
 }
@@ -407,6 +413,7 @@ nav {
 
 /* Quiz Page */
 #quiz-box {
+  width: 100%;
   max-width: 600px;
   margin: 30px auto;
   background: white;
@@ -414,6 +421,7 @@ nav {
   border-radius: 10px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
   text-align: center;
+  box-sizing: border-box;
 }
 
 #quiz-timer-display {
@@ -451,33 +459,13 @@ nav {
 @media (max-width: 500px) {
 
   form,
-  #quiz-box
-
-  /* .tab-content  */
-    {
+  #quiz-box {
+    padding: 16px 12px;
     width: 95%;
   }
 
   button {
     font-size: 16px;
-  }
-
-  header {
-    background-color: rgb(33, 34, 82);
-    color: white;
-    justify-content: space-between;
-    max-width: 100%;
-    margin: 0;
-    font-size: 12px;
-    padding: 0 10px;
-  }
-
-  header>h1 {
-    color: white;
-  }
-
-  body {
-    padding: 0;
   }
 
   #delete-account-btn {
